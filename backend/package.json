@@ -1,0 +1,22 @@
+{
+	"name": "backend",
+	"version": "1.0.0",
+	"main": "index.js",
+	"license": "MIT",
+	"dependencies": {
+		"body-parser": "^1.19.0",
+		"cors": "^2.8.5",
+		"dotenv": "^7.0.0",
+		"es6-promise": "^4.2.6",
+		"express": "^4.16.4",
+		"isomorphic-fetch": "^2.2.1",
+		"request": "^2.88.0",
+		"request-promise": "^4.2.4"
+	},
+	"scripts": {
+		"start": "nodemon server.js"
+	},
+	"devDependencies": {
+		"nodemon": "^1.18.11"
+	}
+}
