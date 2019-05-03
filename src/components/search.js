@@ -1,34 +1,34 @@
 import React, { useState } from 'react';
-import Creatable from 'react-select/lib/Creatable';
 import styled from 'styled-components';
 
-const options = [
-	{ value: 'chocolate', label: 'Chocolate' },
-	{ value: 'strawberry', label: 'Strawberry' },
-	{ value: 'vanilla', label: 'Vanilla' },
-];
-
-function Search({ searchCb }) {
-	const [searchJobTerm, setJobSearchTerm] = useState('');
-	const [searchLocationTerm, setLocationSearchTerm] = useState('');
+function Search({ searchCb, dispatchSearched }) {
+	const [jobInput, setJobInput] = useState('');
+	const [locationInput, setLocationInput] = useState('');
 	const [companyInput, setCompanyInput] = useState('');
 
 	function handleJobSearchChange(e) {
-		setJobSearchTerm(e.target.value);
+		setJobInput(e.target.value);
 	}
 
 	function handleLocationSearchChange(e) {
-		setLocationSearchTerm(e.target.value);
+		setLocationInput(e.target.value);
 	}
 
 	function handleSubmit() {
-		let query = searchJobTerm;
+		let query = jobInput;
 		const company = companyInput;
 		if (company) {
-			query = `${searchJobTerm} company:${company}`;
+			query = `${jobInput} company:${company}`;
 		}
 		console.log('query', query);
-		searchCb({ job: query, location: searchLocationTerm });
+		searchCb({ query, location: locationInput });
+		dispatchSearched({
+			type: 'SET_SEARCH_JOBS_INPUT',
+			payload: {
+				query,
+				location: locationInput,
+			},
+		});
 	}
 
 	// function handleCreate(value) {
@@ -44,41 +44,6 @@ function Search({ searchCb }) {
 
 	return (
 		<div>
-			{/* <Creatable
-				isClearable
-				// menuIsOpen={false}
-				placeholder="Filter by Company"
-				value={companyInput}
-				options={options}
-				onBlur={handleBlur}
-				onBlurResetsInput={false}
-				onCreateOption={handleCreate}
-				onChange={handleCompany}
-			/> */}
-			{/* <Creatable
-				label="Hello"
-				isClearable
-				menuIsOpen={false}
-				placeholder="Filter by Company"
-				value={companyInput}
-				options={options}
-				onBlur={handleBlur}
-				onBlurResetsInput={false}
-				onCreateOption={handleCreate}
-				onChange={handleCompany}
-			/>
-			<Creatable
-				label="Hello"
-				isClearable
-				menuIsOpen={false}
-				placeholder="Filter by Company"
-				value={companyInput}
-				options={options}
-				onBlur={handleBlur}
-				onBlurResetsInput={false}
-				onCreateOption={handleCreate}
-				onChange={handleCompany}
-			/> */}
 			<input
 				type="text"
 				placeholder="Filter By Company"
@@ -89,13 +54,13 @@ function Search({ searchCb }) {
 				type="text"
 				placeholder="Filter By Job Description"
 				onChange={handleJobSearchChange}
-				value={searchJobTerm}
+				value={jobInput}
 			/>
 			<input
 				type="text"
 				placeholder="Filter By Location"
 				onChange={handleLocationSearchChange}
-				value={searchLocationTerm}
+				value={locationInput}
 			/>
 			<button onClick={handleSubmit}>Search</button>
 		</div>

@@ -1,5 +1,4 @@
 const rp = require('request-promise');
-const cheerio = require('cheerio');
 
 const URLS = {
 	github: 'https://jobs.github.com/positions.json',
@@ -9,23 +8,15 @@ const URLS = {
 const SOURCES = ['github', 'indeed'];
 
 class JobPosting {
-	constructor(description, location, req) {
-		this.description = description;
+	constructor({ location, query, start }, req) {
+		this.description = query;
 		this.location = location;
+		this.start = start;
 		this.request = req;
 	}
 
-	mapResponseObject({ company, title, description = '', postingUrl, location }) {
-		return {
-			company,
-			title,
-			description,
-			postingUrl,
-			location,
-		};
-	}
-
 	paramsBuilder(source) {
+		console.log('this', this.start);
 		switch (source) {
 			case 'github':
 				return {
@@ -47,6 +38,7 @@ class JobPosting {
 						l: this.location,
 						userip: '1.2.3.4',
 						useragent: this.request.headers['user-agent'],
+						...(this.start && { start: this.start }),
 					},
 				};
 			default:
@@ -65,9 +57,9 @@ class JobPosting {
 		});
 	}
 
-	parseIndeed(resArray) {
+	parseIndeed(resArray, totalResults) {
 		return resArray.map(posting => {
-			const { company, url, formattedLocation, created_at, date, snippet, jobtitle } = posting;
+			const { company, url, formattedLocation, date, snippet, jobtitle } = posting;
 
 			return {
 				company,
@@ -83,6 +75,7 @@ class JobPosting {
 	async fetchAll() {
 		const apiPromises = SOURCES.map(source => {
 			const { url, qs } = this.paramsBuilder(source);
+			console.log('qs', qs);
 			return rp({
 				uri: url,
 				qs,
@@ -93,27 +86,16 @@ class JobPosting {
 			});
 		});
 
-		// var options = {
-		// 	uri:
-		// 		'https://www.linkedin.com/search/results/all/?keywords=recruiter%20at%20apple&origin=GLOBAL_SEARCH_HEADER',
-		// 	transform: function(body) {
-		// 		return cheerio.load(body);
-		// 	},
-		// };
-
-		// const $ = await rp(options);
-		// console.log('haha', $('.search-results-container').html());
-		// $('.search-result__result-link').each(function(i, elem) {
-		// 	console.log('each is', $(this).attr('href'));
-		// });
 		const apiResponses = await Promise.all(apiPromises);
-		// .then(res => {
 		const githubResponse = this.parseGithub(apiResponses[0]);
 		const indeedResponse = this.parseIndeed(apiResponses[1].results);
 
 		// console.log('res is', res);
 		// console.log('resppp', indeedResponse);
-		return [...indeedResponse];
+		return {
+			jobPostings: [...indeedResponse],
+			totalResults: apiResponses[1].totalResults,
+		};
 		// })
 		// .catch(err => console.log('err is', err));
 

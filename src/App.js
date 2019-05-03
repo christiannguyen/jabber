@@ -7,6 +7,9 @@ import JobPosting from './components/jobPosting';
 import styled from 'styled-components';
 import moment from 'moment';
 import SearchMore from './components/searchMore';
+import { initialSearchedState, searchedReducer } from './reducers';
+
+const SearchContext = React.createContext();
 
 const MainContainer = styled.div`
 	margin: auto;
@@ -14,22 +17,25 @@ const MainContainer = styled.div`
 	display: flex;
 	flex-direction: column;
 	width: 80%;
+	margin-top: 50px;
 `;
 
 const PostingContainer = styled.div`
 	margin: auto;
 	margin-top: 40px;
 	width: 70%;
+	display: flex;
+	flex-wrap: wrap;
 	/* text-align: center; */
 `;
 
-const initialState = {
+const initialJobState = {
 	loading: false,
 	jobPostings: [],
 	errorMessage: null,
 };
 
-const reducer = (state, { type, payload }) => {
+const jobReducer = (state, { type, payload }) => {
 	switch (type) {
 		case 'SEARCH_JOBS_REQUEST':
 			return {
@@ -56,18 +62,19 @@ const reducer = (state, { type, payload }) => {
 
 function App() {
 	const [searched, setSearched] = useState(false);
-	const [state, dispatch] = useReducer(reducer, initialState);
-	function searchJobs(searchData, additionalParams) {
-		const { location, job } = searchData;
+	const [state, dispatch] = useReducer(jobReducer, initialJobState);
+	const [searchedState, dispatchSearched] = useReducer(searchedReducer, initialSearchedState);
+	function searchJobs(searchData, additionalParams = {}) {
+		const { location, query } = searchData;
 		dispatch({
 			type: 'SEARCH_JOBS_REQUEST',
 		});
-		// fetch(`api/getData?location=${location}&job=${job}`)
 		axios
 			.get('api/getData', {
 				params: {
 					location,
-					job,
+					query,
+					...additionalParams,
 				},
 			})
 			.then(res => {
@@ -117,9 +124,13 @@ function App() {
 
 	return (
 		<MainContainer>
-			<Search searchCb={searchJobs} />
+			<Search searchCb={searchJobs} dispatchSearched={dispatchSearched} />
 			<PostingContainer>{renderPostings()}</PostingContainer>
-			<SearchMore searchJobs={searchJobs} jobPostings={jobPostings} />
+			<SearchMore
+				searchJobs={searchJobs}
+				searchedState={searchedState}
+				jobPostingsLength={jobPostings.length}
+			/>
 		</MainContainer>
 	);
 	// return <div className="App">{(response.loading && 'Loading...') || <p>he</p>}</div>;

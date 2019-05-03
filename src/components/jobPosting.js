@@ -5,9 +5,11 @@ import moment from 'moment';
 
 const JobPostingWrapper = styled.div`
 	border-radius: 5px;
+	width: 40%;
 	padding: 15px;
-	margin-bottom: 15px;
-	/* box-shadow: 0 2px 6px 0 hsla(0, 0%, 0%, 0.2); */
+	margin-left: 15px;
+	margin-right: 15px;
+	margin-bottom: 20px;
 	box-shadow: 0 15px 35px 0 rgba(42, 51, 83, 0.12), 0 5px 15px rgba(0, 0, 0, 0.06);
 `;
 const TopSection = styled.div`
@@ -16,6 +18,7 @@ const TopSection = styled.div`
 `;
 const BottomSection = styled.div``;
 const LeftSide = styled.div`
+	width: 70%;
 	display: flex;
 	flex-direction: column;
 `;
@@ -29,6 +32,17 @@ const RightSide = styled.div`
 const SecondaryText = styled.span`
 	color: #999999;
 	font-size: 14px;
+`;
+
+const LinkedInText = styled.a`
+	display: block;
+	color: #8aa0f6;
+	margin-top: 25px;
+	text-decoration: none;
+	&:hover {
+		cursor: pointer;
+		text-decoration: underline;
+	}
 `;
 
 const Title = styled.a`
@@ -64,15 +78,13 @@ function JobPosting({ company, date, url, location, title, description }) {
 			</TopSection>
 			<BottomSection>
 				<span>{strippedDescription}</span>
-				<div>
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href={`https://www.linkedin.com/search/results/all/?keywords=recruiter%20at%20${company}&origin=GLOBAL_SEARCH_HEADER`}
-					>
-						LinkedIn
-					</a>
-				</div>
+				<LinkedInText
+					target="_blank"
+					rel="noopener noreferrer"
+					href={`https://www.linkedin.com/search/results/all/?keywords=recruiter%20at%20${company}&origin=GLOBAL_SEARCH_HEADER`}
+				>
+					Recruiter Search
+				</LinkedInText>
 			</BottomSection>
 		</JobPostingWrapper>
 	);

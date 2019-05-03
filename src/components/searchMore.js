@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import PropTypes from 'prop-types';
 const SearchMoreWrapper = styled.div``;
 
-function SearchMore({ searchJobs, jobPostings }) {
+function SearchMore({ searchJobs, jobPostingsLength, searchedState }) {
 	function handleClick() {
-		searchJobs();
+		const additionalParams = {
+			start: jobPostingsLength,
+		};
+		searchJobs(searchedState, additionalParams);
 	}
+
+	console.log('from search more', searchedState);
 	return (
 		<SearchMoreWrapper>
 			<button onClick={handleClick}>Search More</button>
