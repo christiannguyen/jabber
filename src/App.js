@@ -6,6 +6,7 @@ import Search from './components/search';
 import JobPosting from './components/jobPosting';
 import styled from 'styled-components';
 import moment from 'moment';
+import SearchMore from './components/searchMore';
 
 const MainContainer = styled.div`
 	margin: auto;
@@ -54,8 +55,9 @@ const reducer = (state, { type, payload }) => {
 };
 
 function App() {
+	const [searched, setSearched] = useState(false);
 	const [state, dispatch] = useReducer(reducer, initialState);
-	function searchJobs(searchData) {
+	function searchJobs(searchData, additionalParams) {
 		const { location, job } = searchData;
 		dispatch({
 			type: 'SEARCH_JOBS_REQUEST',
@@ -74,12 +76,14 @@ function App() {
 					type: 'SEARCH_JOBS_SUCCESS',
 					payload: res.data.jobPostings,
 				});
+				setSearched(true);
 			})
 			.catch(err => {
 				dispatch({
 					type: 'SEARCH_JOBS_FAILURE',
 					payload: err,
 				});
+				setSearched(true);
 			});
 	}
 
@@ -88,6 +92,8 @@ function App() {
 			return <p>... loading</p>;
 		} else if (errorMessage) {
 			return <p>error: {errorMessage}</p>;
+		} else if (jobPostings.length === 0 && searched) {
+			return <p>No Jobs found :(</p>;
 		} else {
 			console.log('job postings', jobPostings);
 			jobPostings.sort((a, b) => {
@@ -113,7 +119,7 @@ function App() {
 		<MainContainer>
 			<Search searchCb={searchJobs} />
 			<PostingContainer>{renderPostings()}</PostingContainer>
-			{/* <JobPosting /> */}
+			<SearchMore searchJobs={searchJobs} jobPostings={jobPostings} />
 		</MainContainer>
 	);
 	// return <div className="App">{(response.loading && 'Loading...') || <p>he</p>}</div>;
