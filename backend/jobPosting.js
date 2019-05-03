@@ -1,4 +1,5 @@
 const rp = require('request-promise');
+const cheerio = require('cheerio');
 
 const URLS = {
 	github: 'https://jobs.github.com/positions.json',
@@ -91,6 +92,20 @@ class JobPosting {
 				},
 			});
 		});
+
+		// var options = {
+		// 	uri:
+		// 		'https://www.linkedin.com/search/results/all/?keywords=recruiter%20at%20apple&origin=GLOBAL_SEARCH_HEADER',
+		// 	transform: function(body) {
+		// 		return cheerio.load(body);
+		// 	},
+		// };
+
+		// const $ = await rp(options);
+		// console.log('haha', $('.search-results-container').html());
+		// $('.search-result__result-link').each(function(i, elem) {
+		// 	console.log('each is', $(this).attr('href'));
+		// });
 		const apiResponses = await Promise.all(apiPromises);
 		// .then(res => {
 		const githubResponse = this.parseGithub(apiResponses[0]);

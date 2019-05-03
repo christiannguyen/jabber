@@ -1,11 +1,26 @@
 import React, { useState, useReducer } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import useAxios from './hooks/useAxios';
-import rp from 'request-promise';
 import axios from 'axios';
 import Search from './components/search';
 import JobPosting from './components/jobPosting';
+import styled from 'styled-components';
+import moment from 'moment';
+
+const MainContainer = styled.div`
+	margin: auto;
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	width: 80%;
+`;
+
+const PostingContainer = styled.div`
+	margin: auto;
+	margin-top: 40px;
+	width: 70%;
+	/* text-align: center; */
+`;
 
 const initialState = {
 	loading: false,
@@ -75,7 +90,19 @@ function App() {
 			return <p>error: {errorMessage}</p>;
 		} else {
 			console.log('job postings', jobPostings);
-			return jobPostings.map(job => <JobPosting />);
+			jobPostings.sort((a, b) => {
+				return moment(b.date) - moment(a.date);
+			});
+			return jobPostings.map(({ company, date, url, location, title, description }) => (
+				<JobPosting
+					company={company}
+					date={date}
+					url={url}
+					location={location}
+					title={title}
+					description={description}
+				/>
+			));
 		}
 	}
 
@@ -83,11 +110,11 @@ function App() {
 	console.log('state is', state);
 
 	return (
-		<div>
+		<MainContainer>
 			<Search searchCb={searchJobs} />
-			{/* <div>{renderPostings()}</div> */}
-			<JobPosting />
-		</div>
+			<PostingContainer>{renderPostings()}</PostingContainer>
+			{/* <JobPosting /> */}
+		</MainContainer>
 	);
 	// return <div className="App">{(response.loading && 'Loading...') || <p>he</p>}</div>;
 }

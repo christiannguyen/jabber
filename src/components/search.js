@@ -20,8 +20,18 @@ function Search({ searchCb }) {
 
 	return (
 		<div>
-			<input type="text" onChange={handleJobSearchChange} value={searchJobTerm} />
-			<input type="text" onChange={handleLocationSearchChange} value={searchLocationTerm} />
+			<input
+				type="text"
+				placeholder="Filter By Job Description"
+				onChange={handleJobSearchChange}
+				value={searchJobTerm}
+			/>
+			<input
+				type="text"
+				placeholder="Filter By Location"
+				onChange={handleLocationSearchChange}
+				value={searchLocationTerm}
+			/>
 			<button onClick={handleSubmit}>Search</button>
 		</div>
 	);
