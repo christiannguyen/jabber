@@ -6,10 +6,11 @@ import Search from './components/search';
 import JobPosting from './components/jobPosting';
 import styled from 'styled-components';
 import moment from 'moment';
-import SearchMore from './components/searchMore';
-import { initialSearchedState, searchedReducer } from './reducers';
+import { initialSearchedState, searchedReducer, initialJobState, jobReducer } from './reducers';
+import Pagination from 'react-js-pagination';
+// require('bootstrap/less/bootstrap.less');
 
-const SearchContext = React.createContext();
+const MULTIPLIER = 20;
 
 const MainContainer = styled.div`
 	margin: auto;
@@ -26,46 +27,22 @@ const PostingContainer = styled.div`
 	width: 70%;
 	display: flex;
 	flex-wrap: wrap;
-	/* text-align: center; */
 `;
-
-const initialJobState = {
-	loading: false,
-	jobPostings: [],
-	errorMessage: null,
-};
-
-const jobReducer = (state, { type, payload }) => {
-	switch (type) {
-		case 'SEARCH_JOBS_REQUEST':
-			return {
-				...state,
-				loading: true,
-				errorMessage: null,
-			};
-		case 'SEARCH_JOBS_SUCCESS':
-			return {
-				...state,
-				loading: false,
-				jobPostings: payload,
-			};
-		case 'SEARCH_JOBS_FAILURE':
-			return {
-				...state,
-				loading: false,
-				errorMessage: payload.error,
-			};
-		default:
-			return state;
-	}
-};
 
 function App() {
 	const [searched, setSearched] = useState(false);
+	const [page, setPage] = useState(1);
 	const [state, dispatch] = useReducer(jobReducer, initialJobState);
 	const [searchedState, dispatchSearched] = useReducer(searchedReducer, initialSearchedState);
-	function searchJobs(searchData, additionalParams = {}) {
+
+	function searchJobs(searchData, type) {
 		const { location, query } = searchData;
+		let pageCopy = page;
+		console.log('page is', pageCopy);
+		if (type !== 'more') {
+			setPage(1);
+			pageCopy = 1;
+		}
 		dispatch({
 			type: 'SEARCH_JOBS_REQUEST',
 		});
@@ -74,15 +51,19 @@ function App() {
 				params: {
 					location,
 					query,
-					...additionalParams,
+					start: (pageCopy - 1) * MULTIPLIER,
 				},
 			})
 			.then(res => {
 				console.log('res is', res);
 				dispatch({
 					type: 'SEARCH_JOBS_SUCCESS',
-					payload: res.data.jobPostings,
+					payload: {
+						jobPostings: res.data.jobPostings,
+						totalResults: res.data.totalResults,
+					},
 				});
+				if (!searched) setPage(1);
 				setSearched(true);
 			})
 			.catch(err => {
@@ -118,22 +99,30 @@ function App() {
 			));
 		}
 	}
+	function handlePageChange(pageNumber) {
+		console.log(`active page is ${pageNumber}`);
+		searchJobs(searchedState);
+		setPage(pageNumber, 'more');
+	}
 
-	const { jobPostings, loading, errorMessage } = state;
+	const { jobPostings, loading, errorMessage, totalResults } = state;
 	console.log('state is', state);
 
 	return (
 		<MainContainer>
 			<Search searchCb={searchJobs} dispatchSearched={dispatchSearched} />
 			<PostingContainer>{renderPostings()}</PostingContainer>
-			<SearchMore
-				searchJobs={searchJobs}
-				searchedState={searchedState}
-				jobPostingsLength={jobPostings.length}
-			/>
+			{searched && !loading && (
+				<Pagination
+					activePage={page}
+					itemsCountPerPage={20}
+					totalItemsCount={totalResults}
+					pageRangeDisplayed={5}
+					onChange={handlePageChange}
+				/>
+			)}
 		</MainContainer>
 	);
-	// return <div className="App">{(response.loading && 'Loading...') || <p>he</p>}</div>;
 }
 
 export default App;

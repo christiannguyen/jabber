@@ -16,7 +16,6 @@ class JobPosting {
 	}
 
 	paramsBuilder(source) {
-		console.log('this', this.start);
 		switch (source) {
 			case 'github':
 				return {
@@ -36,8 +35,10 @@ class JobPosting {
 						v: 2,
 						q: this.description,
 						l: this.location,
+						jt: 'fulltime',
 						userip: '1.2.3.4',
 						useragent: this.request.headers['user-agent'],
+						limit: 20,
 						...(this.start && { start: this.start }),
 					},
 				};

@@ -34,5 +34,30 @@
 
 body {
 	font-family: 'Graphik', sans-serif;
-	backgorund: #f3f7f9;
+	background: #f3f7f9;
+}
+
+ul.pagination {
+	display: inline-block;
+}
+
+ul.pagination li {
+	display: inline;
+}
+
+ul.pagination li a {
+	padding: 6px 12px;
+	font-size: 14px;
+	border: 1px solid #ddd;
+	margin-left: -1px;
+	text-decoration: none;
+}
+
+ul.pagination li.active a {
+	background-color: #337ab7;
+	border-color: #337ab7;
+}
+
+ul.pagination li.disabled a:hover {
+	cursor: not-allowed;
 }

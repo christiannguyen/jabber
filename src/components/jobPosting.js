@@ -11,6 +11,10 @@ const JobPostingWrapper = styled.div`
 	margin-right: 15px;
 	margin-bottom: 20px;
 	box-shadow: 0 15px 35px 0 rgba(42, 51, 83, 0.12), 0 5px 15px rgba(0, 0, 0, 0.06);
+	transition: all 0.2s ease-in-out;
+	&:hover {
+		transform: scale(1.02);
+	}
 `;
 const TopSection = styled.div`
 	display: flex;

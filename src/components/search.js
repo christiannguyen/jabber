@@ -1,6 +1,21 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+const Input = styled.input`
+	padding: 10px;
+	width: 150px;
+	border: 1px solid #dadee0;
+`;
+
+const Button = styled.button`
+	padding: 10px 20px;
+	background: #5978f3;
+	color: #fff;
+	&:hover {
+		cursor: pointer;
+	}
+`;
+
 function Search({ searchCb, dispatchSearched }) {
 	const [jobInput, setJobInput] = useState('');
 	const [locationInput, setLocationInput] = useState('');
@@ -31,38 +46,31 @@ function Search({ searchCb, dispatchSearched }) {
 		});
 	}
 
-	// function handleCreate(value) {
-	// 	console.log('value', value);
-	// 	setCompanyInput({ value, label: value });
-	// }
-	// function handleBlur(event) {
-	// 	handleCreate(event.target.value);
-	// }
 	function handleCompany(e) {
 		setCompanyInput(e.target.value);
 	}
 
 	return (
 		<div>
-			<input
+			<Input
 				type="text"
 				placeholder="Filter By Company"
 				onChange={handleCompany}
 				value={companyInput}
 			/>
-			<input
+			<Input
 				type="text"
 				placeholder="Filter By Job Description"
 				onChange={handleJobSearchChange}
 				value={jobInput}
 			/>
-			<input
+			<Input
 				type="text"
 				placeholder="Filter By Location"
 				onChange={handleLocationSearchChange}
 				value={locationInput}
 			/>
-			<button onClick={handleSubmit}>Search</button>
+			<Button onClick={handleSubmit}>Search</Button>
 		</div>
 	);
 	// return <div className="Searchbar">{(response.loading && 'Loading...') || <p>he</p>}</div>;
